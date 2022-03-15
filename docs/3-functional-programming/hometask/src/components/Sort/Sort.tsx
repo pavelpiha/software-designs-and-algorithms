@@ -1,35 +1,45 @@
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 
-import styles from './Sort.module.scss'
+import styles from "./Sort.module.scss";
+import { Row } from "../Table";
 
 interface SortProps {
   store?: {};
   updateStore?: (val) => void;
 }
 
-// OR
-
-//interface SortProps {
-//  selected?: {};
-//  updateSelected?: (val) => void;
-//}
-
-// OR store can be global
+export const sortDataByPayments = (
+  value: string,
+  data: Row[],
+  updateStore: (val: any) => void
+) => {
+  if (value === "desc") {
+    updateStore(
+      [...data].sort((a, b) => (a.lastPayments < b.lastPayments ? 1 : -1))
+    );
+  } else if (value === "asc") {
+    updateStore(
+      [...data].sort((a, b) => (a.lastPayments > b.lastPayments ? 1 : -1))
+    );
+  } else {
+    updateStore(data);
+  }
+};
 
 export function Sort(props: SortProps) {
+  const { updateStore } = { ...props };
+
   const handleChange = (value) => {
-    console.log(value); // for debugging
+    updateStore(value);
   };
 
   return (
     <FormControl className={styles.control} component="fieldset">
-      <FormLabel className={styles.label}>
-        Sort by payments
-      </FormLabel>
+      <FormLabel className={styles.label}>Sort by payments</FormLabel>
       <RadioGroup
         className={styles.group}
         aria-label="sorting"
