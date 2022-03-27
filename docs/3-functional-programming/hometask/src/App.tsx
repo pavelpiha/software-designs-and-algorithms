@@ -36,20 +36,29 @@ function App() {
     );
   }, []);
 
+  const getMapByFieldName = function <T>(
+    array: Array<T>,
+    fieldName: string
+  ): { [key: string]: T } {
+    return array.reduce(
+      (acc, item) => ({ ...acc, [item[fieldName]]: item }),
+      {}
+    ) as { [key: string]: T };
+  };
+
   const dataConverter = (
     users: User[],
     accounts: Account[],
     images: Image[]
   ): TableProps => {
+    const accountsMap = getMapByFieldName<Account>(accounts, "userID");
+    const imagesMap = getMapByFieldName<Image>(images, "userID");
     const rowsData: Row[] = users.map((user, index) => {
       const currentRow: Row = {
         ...user,
         posts: { ...accounts[index] }.posts,
-        lastPayments: findPayment(
-          [...accounts[index].payments],
-          getByLatestDate
-        ).totalSum,
-        avatar: { ...images[index] }.url,
+        lastPayments: findPayment(accountsMap[user.userID].payments, getByLatestDate).totalSum,
+        avatar: imagesMap[user.userID].url,
       };
       return currentRow;
     }, []);
