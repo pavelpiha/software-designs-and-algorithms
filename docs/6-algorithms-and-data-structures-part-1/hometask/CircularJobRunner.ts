@@ -1,53 +1,41 @@
-import { CustomJob } from "./CustomJob";
+import { BinaryHeap } from "./BinaryHeap";
 import { Job } from "./Job";
+import { MinBinaryHeap } from "./MinBinaryHeap";
 
 export class CircularJobRunner {
   initialCapacity: number = 10;
-  jobs: Job[] = [];
+  jobs: BinaryHeap = new BinaryHeap();
+  // jobs: MinBinaryHeap = new MinBinaryHeap();
 
   constructor() {}
 
   insert(job: Job) {
-    let contain = false;
-
-    for (let i = 0; i < this.jobs.length; i++) {
-      if (this.jobs[i].priority > job.priority) {
-        this.jobs.splice(i, 0, job);
-        contain = true;
-        break;
-      }
-    }
-    if (!contain) {
-      this.jobs.push(job);
-    }
+    this.jobs.insert(job);
   }
 
-  remove(): Job | undefined {
+  remove(): Job | null {
     if (this.isEmpty()) {
       console.log("Underflow");
+      return null;
     } else {
-      return this.jobs.shift();
-      // return this.jobs.pop();
+      return this.jobs.remove();
     }
   }
 
   isEmpty(): boolean {
-    return this.jobs.length == 0;
+    return this.jobs.size() == 0;
   }
 
   size(): number {
-    return this.jobs.length;
+    return this.jobs.size();
   }
 
   runJobs() {
-    this.jobs.forEach(() => {
-      setTimeout(() => {
-        this.remove()?.run();
-      }, 0);
-      setTimeout(() => {
-        console.log("priorityQueue.size()", this.size());
-      }, 0);
-    });
+    setTimeout(() => {
+      while (this.jobs.size()) {
+        const job = this.remove();
+        job?.run();
+      }
+    }, 0);
   }
 }
-

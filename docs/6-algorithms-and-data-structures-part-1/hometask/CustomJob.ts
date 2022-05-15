@@ -16,7 +16,7 @@ export class CustomJob implements Job {
     let currentDate = null;
     do {
       currentDate = Date.now();
-    } while (currentDate - date < 500);
+    } while (currentDate - date < 100);
     console.log("priority ", this.priority);
   }
 }
