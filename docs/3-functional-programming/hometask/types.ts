@@ -10,7 +10,7 @@ export interface User {
   name: string
 }
 
-interface Payment {
+export interface Payment {
   totalSum: number
   date: string
 }

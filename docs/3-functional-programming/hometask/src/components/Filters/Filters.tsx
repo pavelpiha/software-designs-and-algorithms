@@ -1,47 +1,64 @@
-import { useState } from 'react';
-import Checkbox from '@mui/material/Checkbox';
+import { useState } from "react";
+import Checkbox from "@mui/material/Checkbox";
 
-import styles from './Filters.module.scss';
+import styles from "./Filters.module.scss";
+import { Row } from "../Table";
 
 interface FiltersProps {
-  store?: {};
+  store?: any;
   updateStore?: (val) => void;
 }
 
-// OR
-
-//interface FiltersProps {
-//  selected?: {};
-//  updateSelected?: (val) => void;
-//}
-
-// OR store can be global
-
 const OPTIONS = [
   {
-    title: 'Without posts',
+    title: "Without posts",
   },
   {
-    title: 'More than 100 posts',
+    title: "More than 100 posts",
   },
 ];
 
+export const doFilter = (filters: string[], data: Row[]) => {
+  const initialData = [...data];
+  if (filters.length && filters.length === 2) {
+    const filteredRows = filterByPostsNumberMoreThan(100)(initialData).concat(
+      filterByPostsNumber(0)(initialData)
+    );
+    return filteredRows;
+  } else if (filters.length && filters[0] === OPTIONS[0].title) {
+    const filteredRows = filterByPostsNumber(0)(initialData);
+    return filteredRows;
+  } else if (filters.length && filters[0] === OPTIONS[1].title) {
+    const filteredRows = filterByPostsNumberMoreThan(100)(initialData);
+    return filteredRows;
+  } else {
+    return [];
+  }
+};
+
+export const filterByPostsNumber = (params: number) => {
+  return (rows: Row[]) => {
+    return rows.filter((row) => row.posts === params);
+  };
+};
+
+export const filterByPostsNumberMoreThan = (params: number) => {
+  return (rows: Row[]) => rows.filter((row) => row.posts >= params);
+};
+
 export function Filters(props: FiltersProps) {
   const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
+  const { updateStore } = { ...props };
 
   const onChange = ({ title }) => {
-    console.log(title); // for debugging
-
-    let updatedFilters;
+    let filters: string[] = [];
     if (selectedFilter.find((filter) => filter === title)) {
-      updatedFilters = selectedFilter.filter(
-        (filter) => filter !== title
-      );
+      filters = selectedFilter.filter((filter) => filter !== title);
     } else {
-      updatedFilters = [...selectedFilter, title];
+      filters = [...selectedFilter, title];
     }
-
-    setSelectedFilter(updatedFilters);
+    setSelectedFilter(filters);
+    updateStore(filters);
   };
 
   return (
@@ -55,12 +72,14 @@ export function Filters(props: FiltersProps) {
             key={option.title}
           >
             <Checkbox
-              checked={!!selectedFilter.find(filter => filter === option.title)}
+              checked={
+                !!selectedFilter.find((filter) => filter === option.title)
+              }
               value={option.title}
               onChange={() => onChange(option)}
               size="small"
               color="primary"
-            />{' '}
+            />{" "}
             {option.title}
           </li>
         ))}

@@ -15,7 +15,7 @@ export interface Row {
   posts: number
 }
 
-interface TableProps {
+export interface TableProps {
   rows: Row[]
 }
 
